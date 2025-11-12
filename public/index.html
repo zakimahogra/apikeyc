@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Key Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      color: #333;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      backdrop-filter: blur(15px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 40px;
+      max-width: 600px;
+      width: 100%;
+      color: white;
+      animation: fadeIn 0.6s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .header { text-align: center; margin-bottom: 25px; }
+    .header h1 {
+      font-size: 2.2em;
+      margin-bottom: 10px;
+      background: linear-gradient(90deg, #f093fb, #f5576c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .header p { color: #eee; font-size: 0.95em; opacity: 0.9; }
+    .logo { width: 90px; height: 90px; margin: 0 auto 20px; }
+    .logo img { width: 100%; height: 100%; object-fit: contain; }
+    .generate-btn {
+      width: 100%; padding: 15px;
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white; border: none; border-radius: 12px;
+      font-size: 1.1em; font-weight: 600; cursor: pointer;
+      transition: all 0.3s ease; margin-bottom: 20px;
+    }
+    .generate-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(245,87,108,0.6); }
+    .output-section label { display: block; font-weight: 600; margin-bottom: 10px; color: #fff; }
+    .api-key-display {
+      width: 100%; padding: 15px; border: none; border-radius: 10px;
+      font-family: 'Courier New', monospace;
+      background: rgba(255, 255, 255, 0.2); color: #fff;
+      min-height: 100px; resize: none; outline: none;
+      transition: background 0.3s ease;
+    }
+    .api-key-display:focus { background: rgba(255, 255, 255, 0.3); }
+    .copy-btn {
+      width: 100%; padding: 12px; border: 2px solid #fff;
+      background: transparent; color: white; border-radius: 10px;
+      font-size: 1em; font-weight: 600; cursor: pointer;
+      transition: all 0.3s ease; margin-top: 10px;
+    }
+    .copy-btn:hover { background: white; color: #f5576c; }
+    .notification {
+      position: fixed; top: 20px; right: 20px;
+      background: #4CAF50; color: white;
+      padding: 15px 20px; border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      opacity: 0; transform: translateX(400px);
+      transition: all 0.3s ease;
+    }
+    .notification.show { opacity: 1; transform: translateX(0); }
+    @media (max-width: 500px) {
+      .container { padding: 30px 20px; }
+      .header h1 { font-size: 1.6em; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <img src="https://cdn-icons-png.flaticon.com/512/1055/1055646.png" alt="Logo">
+    </div>
+    <div class="header">
+      <h1>API Key Generator</h1>
+      <p>Buat kunci API unik langsung dari server</p>
+    </div>
+
+    <button class="generate-btn" onclick="generateKey()">🔐 Generate API Key</button>
+
+    <div class="output-section">
+      <label for="apiKey">Hasil API Key:</label>
+      <textarea id="apiKey" class="api-key-display" readonly></textarea>
+      <button class="copy-btn" onclick="copyKey()">📋 Salin API Key</button>
+    </div>
+  </div>
+
+  <div id="notification" class="notification">API Key disalin!</div>
+
+  <script>
+    async function generateKey() {
+      try {
+        // 🔥 Ganti URL ini sesuai port server kamu
+        const response = await fetch('http://localhost:3000/create', { method: 'POST' });
+        if (!response.ok) throw new Error('Server tidak merespons dengan benar');
+
+        const data = await response.json();
+        if (!data.apiKey) throw new Error('API Key tidak diterima dari server');
+
+        document.getElementById('apiKey').value = data.apiKey;
+
+        const notif = document.getElementById('notification');
+        notif.textContent = "✅ API Key berhasil dibuat dari server!";
+        notif.classList.add('show');
+        setTimeout(() => notif.classList.remove('show'), 2000);
+      } catch (err) {
+        console.error('❌ Gagal membuat API key:', err);
+
+        const notif = document.getElementById('notification');
+        notif.textContent = "❌ Gagal membuat API key, periksa server!";
+        notif.classList.add('show');
+        setTimeout(() => notif.classList.remove('show'), 2000);
+      }
+    }
+
+    function copyKey() {
+      const textarea = document.getElementById('apiKey');
+      textarea.select();
+      document.execCommand('copy');
+
+      const notif = document.getElementById('notification');
+      notif.textContent = "📋 API Key disalin!";
+      notif.classList.add('show');
+      setTimeout(() => notif.classList.remove('show'), 2000);
+    }
+  </script>
+</body>
+</html>
