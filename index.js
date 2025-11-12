@@ -51,7 +51,7 @@ app.post('/checkapi', (req, res) => {
   });
 });
 
-// 🧩 Tampilkan semua API key
+// 🧩 Tampilkan semua API keyy
 app.get('/allkeys', (req, res) => {
   const sql = 'SELECT * FROM token ORDER BY id DESC';
   db.query(sql, (err, results) => {
